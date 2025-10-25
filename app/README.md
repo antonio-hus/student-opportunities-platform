@@ -1,6 +1,6 @@
 # University Practical Work Opportunities Platform
 
-> 🎓 A platform connecting university students with NGOs and small businesses for practical training opportunities.
+> A platform connecting university students with NGOs and small businesses for practical training opportunities.
 
 ---
 
@@ -15,6 +15,7 @@
 - [Running the Application](#running-the-application)
 - [Database Setup](#database-setup)
 - [Deployment](#deployment)
+  - [Docker Deployment](#docker-deployment)
 
 ---
 
@@ -91,70 +92,66 @@ cp your-university-logo.svg public/logo.svg
 
 ### 2. Theme & Colors
 
-The design system is centralized in `app/globals.css`.
+**⚠️ IMPORTANT: The theme system uses a centralized configuration file.**
 
-#### Color Variables
+**Do NOT edit `app/globals.css` directly** - it is auto-generated!
 
-Edit the `:root` section for light mode colors:
+#### How to Change Theme Colors
+
+**Step 1: Edit the theme configuration file**
+
+Edit `lib/theme/colors.ts`:
 
 ```
-/* app/globals.css */
+export const themeColors = {
+light: {
+primary: '#14b8a6',           // Change this to your university color
+primaryHover: '#0d9488',
+primaryLight: '#5eead4',
+primaryDark: '#0f766e',
+primaryForeground: '#ffffff',
 
-:root {
-/* Primary color (main accent - buttons, links) */
---primary: #14b8a6;          /* Teal by default */
---primary-hover: #0d9488;
---primary-light: #5eead4;
---primary-dark: #0f766e;
-
-/* Secondary color (supporting elements) */
---secondary: #64748b;        /* Slate by default */
---secondary-hover: #475569;
-
-/* Accent color (highlights, CTAs) */
---accent: #f59e0b;           /* Amber by default */
---accent-hover: #d97706;
-
-/* ... more colors */
+        // ... more colors
+    },
+    dark: {
+        primary: '#5eead4',           // Dark mode equivalent
+        // ... more colors
+    },
 }
 ```
 
-#### Quick Theme Change
-
-**Example: Change to University Blue Theme**
+**Step 2: Generate CSS from configuration**
 
 ```
-:root {
---primary: #1e40af;          /* Deep Blue */
---primary-hover: #1e3a8a;
---primary-light: #3b82f6;
---primary-dark: #1e3a8a;
-}
+npm run theme:generate
 ```
 
-**Example: Change to University Red Theme**
+This will automatically update:
+- `app/globals.css` (auto-generated)
+- Email templates (automatically use the same colors)
+- All UI components
 
+#### Quick Theme Examples
+
+**University Blue Theme:**
 ```
-:root {
---primary: #dc2626;          /* Red */
---primary-hover: #b91c1c;
---primary-light: #ef4444;
---primary-dark: #991b1b;
-}
+// lib/theme/colors.ts
+primary: '#1e40af',
+primaryHover: '#1e3a8a',
+primaryLight: '#3b82f6',
 ```
 
-#### Dark Mode Colors
-
-Edit the `@media (prefers-color-scheme: dark)` section:
-
+**University Red Theme:**
 ```
-@media (prefers-color-scheme: dark) {
-:root {
---primary: #5eead4;        /* Lighter shade for dark mode */
---primary-hover: #2dd4bf;
-/* ... adjust other colors */
-}
-}
+// lib/theme/colors.ts
+primary: '#dc2626',
+primaryHover: '#b91c1c',
+primaryLight: '#ef4444',
+```
+
+**After editing, always run:**
+```
+npm run theme:generate
 ```
 
 ---
@@ -166,9 +163,7 @@ The platform supports multiple languages. Default: English and Romanian.
 #### File Structure
 
 ```
-i18n/
-├── config.ts              # Language configuration
-└── messages/
+messages/
 ├── en.ts              # English translations
 └── ro.ts              # Romanian translations
 ```
@@ -182,45 +177,9 @@ export const locales = ['en', 'ro', 'de'] as const;  // Add 'de' for German
 export const defaultLocale = 'en' as const;
 ```
 
-**Step 2: Create/Edit Message Files**
+**Step 2: Create Message File**
 
-`messages/en.ts`:
-```
-export default {
-metadata: {
-title: "Your University Name - Practical Work Platform",
-description: "Connect students with opportunities",
-},
-auth: {
-login: {
-title: "Sign In",
-subtitle: "Welcome back to the platform",
-email: "Email",
-password: "Password",
-// ... more translations
-}
-}
-} as const;
-```
-
-`messages/ro.ts`:
-```
-export default {
-metadata: {
-title: "Nume Universitate - Platformă de Practică",
-description: "Conectează studenții cu oportunități",
-},
-auth: {
-login: {
-title: "Autentificare",
-subtitle: "Bine ai revenit pe platformă",
-email: "Email",
-password: "Parolă",
-// ... more translations
-}
-}
-} as const;
-```
+Create `messages/de.ts` following the same structure as `en.ts`.
 
 ---
 
@@ -228,21 +187,7 @@ password: "Parolă",
 
 #### Environment Variables
 
-Edit `.env`:
-
-```
-# Database
-DATABASE_URL="postgresql://user:password@localhost:5432/university_platform?schema=public"
-
-# Session Security (generate a random 32-character string)
-SESSION_SECRET="your-super-secret-random-string-here-min-32-chars"
-
-# Email (optional - for verification emails)
-SMTP_HOST="smtp.gmail.com"
-SMTP_PORT="587"
-SMTP_USER="noreply@youruniversity.ro"
-SMTP_PASS="your-email-password"
-```
+Create a `.env` file following the `.env.example`.
 
 #### Generate Secure Session Secret
 
@@ -252,28 +197,6 @@ openssl rand -base64 32
 
 # Windows (PowerShell)
 [Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Maximum 256 }))
-```
-
-#### Initial Platform Settings
-
-Edit `prisma/seed.ts` to customize initial configuration:
-
-```
-const config = await prisma.platformConfiguration.upsert({
-where: { id: 'default' },
-update: {},
-create: {
-id: 'default',
-universityName: 'Your University Name',           // ← Change this
-primaryColor: '#14b8a6',                          // ← Match globals.css
-secondaryColor: '#64748b',
-studentEmailDomain: '@stud.youruniversity.ro',    // ← Change this
-staffEmailDomain: '@youruniversity.ro',           // ← Change this
-requireOrgVerification: true,
-requireProjectApproval: true,
-enablePortfolioFeature: true,
-},
-})
 ```
 
 ---
@@ -291,6 +214,9 @@ Access at: `http://localhost:3000`
 ### Production Build
 
 ```
+# Generate theme CSS
+npm run theme:generate
+
 # Build the application
 npm run build
 
@@ -306,7 +232,7 @@ npm start
 
 ```
 # Create and apply migrations
-npm run db:init
+npm run db:migrate
 
 # If migrations exist, just apply them
 npm run db:migrate:deploy
@@ -320,7 +246,7 @@ npm run db:seed
 
 This creates:
 - Default platform configuration
-- Admin user (email: `admin@youruniversity.ro`, password: `admin`)
+- Admin user (email: `admin@youruniversity.ro`, password: `admin123`)
 
 ⚠️ **Important**: Change the admin password after first login!
 
@@ -334,39 +260,29 @@ npx prisma migrate reset
 
 ## 🚀 Deployment
 
-### Environment Variables (Production)
+### Docker Deployment (Recommended)
 
-Ensure these are set on your hosting platform:
+Docker provides a consistent environment across all platforms.
 
-```
-DATABASE_URL="your-production-database-url"
-SESSION_SECRET="your-production-secret-min-32-chars"
-NODE_ENV="production"
-```
+### Other Deployment Platforms
 
-### Recommended Platforms
+| Platform | Notes |
+|----------|-------|
+| **Docker** | Recommended - works everywhere |
+| **Railway** | Built-in PostgreSQL, easy deployment |
+| **Render** | Free tier available, persistent containers |
+| **DigitalOcean App Platform** | Managed containers + database |
+| **Fly.io** | Global edge deployment |
+| **VPS (DigitalOcean, Linode)** | Full control, Docker recommended |
 
-- **Vercel** (easiest for Next.js)
-- **Railway** (includes PostgreSQL)
-- **DigitalOcean App Platform**
-- **AWS Amplify**
+### Vercel/Serverless Platforms
 
-### Vercel Deployment
-
-```
-# Install Vercel CLI
-npm i -g vercel
-
-# Deploy
-vercel
-
-# Set environment variables in Vercel dashboard
-# Project Settings > Environment Variables
-```
+⚠️ **Note**: The token cleanup cron job requires a persistent Node.js process. If deploying to Vercel or other serverless platforms, you must use their built-in cron features or external cron services.
 
 ---
 
 ## 📄 License
 
-Copyright © 2025 Babes-Bolyai University. All rights reserved.
+Copyright © 2025 Babeș-Bolyai University. All rights reserved.
+
 Made by Antonio Hus as part of bachelor thesis.

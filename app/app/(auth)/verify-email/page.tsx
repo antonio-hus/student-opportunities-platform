@@ -1,20 +1,25 @@
 /////////////////////////////
 ///    IMPORTS SECTION    ///
 /////////////////////////////
-// Next Libraries
-import { redirect } from "next/navigation"
 // Next-intl Libraries
 import { getTranslations } from 'next-intl/server'
 // Project Libraries
-import { verifySession } from "@/lib/auth/dal"
-import RegisterForm from "./register-form"
+import VerifyEmailForm from './verify-email-form'
 
 /////////////////////////////
 ///   COMPONENT SECTION   ///
 /////////////////////////////
-export default async function RegisterPage() {
+export default async function VerifyEmailPage({
+                                                  searchParams,
+                                              }: {
+    searchParams: Promise<{ token?: string }>
+}) {
     // Get translations
-    const t = await getTranslations('pages.auth.register')
+    const t = await getTranslations('auth.verifyEmail')
+
+    // Await searchParams to access its properties
+    const params = await searchParams
+    const token = params.token
 
     return (
         <div className="container max-w-md mx-auto py-16 px-4">
@@ -22,7 +27,7 @@ export default async function RegisterPage() {
             <p className="text-text-secondary mb-8">
                 {t('subtitle')}
             </p>
-            <RegisterForm />
+            <VerifyEmailForm token={token} />
         </div>
     )
 }

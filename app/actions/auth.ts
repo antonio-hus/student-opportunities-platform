@@ -5,19 +5,21 @@
 /////////////////////////////
 // Next Libraries
 import { redirect } from "next/navigation"
+import { cookies } from "next/headers"
 // Third-party Libraries
 import { z } from "zod"
 // Project Libraries
 import prisma from "@/lib/prisma"
 import { hashPassword, verifyPassword } from "@/lib/auth/password"
 import { createSession, destroySession } from "@/lib/auth/session"
-import { validateEmailDomain, validatePassword as validatePasswordStrength } from "@/lib/auth/validation"
-import { UserRole } from "@prisma/client"
+import { validateEmailDomain } from "@/lib/auth/validation"
+import { generateVerificationToken, verifyEmailToken } from "@/lib/email/token"
+import { sendVerificationEmail, sendWelcomeEmail } from "@/lib/email/sender"
 
 /////////////////////////////
-///  VALIDATION SCHEMAS   ///
+///   VALIDATION SCHEMAS  ///
 /////////////////////////////
-// Sign up form validation schema
+// Sign up validation schema
 const signUpSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
     email: z.string().email("Invalid email address"),
@@ -25,55 +27,45 @@ const signUpSchema = z.object({
     role: z.enum(["STUDENT", "COORDINATOR", "ORGANIZATION"]),
 })
 
-// Sign in form validation schema
+// Sign in validation schema
 const signInSchema = z.object({
     email: z.string().email("Invalid email address"),
     password: z.string().min(1, "Password is required"),
 })
 
-/////////////////////////////
-///    ACTIONS SECTION    ///
-/////////////////////////////
-// Sign up action
 export async function signUp(formData: FormData) {
-    // Validate input
-    const validatedFields = signUpSchema.safeParse({
+    // Extract and validate form data
+    const rawData = {
         name: formData.get("name"),
         email: formData.get("email"),
         password: formData.get("password"),
         role: formData.get("role"),
-    })
-
-    if (!validatedFields.success) {
-        return {
-            error: validatedFields.error.issues[0].message,
-        }
     }
 
-    const { name, email, password, role } = validatedFields.data
+    // Validate with Zod
+    const parsed = signUpSchema.safeParse(rawData)
+    if (!parsed.success) {
+        return { error: parsed.error.issues[0].message }
+    }
 
-    // Validate email domain
-    const domainValidation = await validateEmailDomain(email, role as UserRole)
+    const { name, email, password, role } = parsed.data
+
+    // Validate email domain based on role
+    const domainValidation = await validateEmailDomain(email, role as any)
     if (!domainValidation.valid) {
         return { error: domainValidation.error }
     }
 
-    // Validate password strength
-    const passwordValidation = validatePasswordStrength(password)
-    if (!passwordValidation.valid) {
-        return { error: passwordValidation.error }
-    }
-
-    // Check if user already exists
-    const existingUser = await prisma.user.findUnique({
-        where: { email },
-    })
-
-    if (existingUser) {
-        return { error: "Email already registered" }
-    }
-
     try {
+        // Check if user already exists
+        const existingUser = await prisma.user.findUnique({
+            where: { email },
+        })
+
+        if (existingUser) {
+            return { error: "An account with this email already exists" }
+        }
+
         // Hash password
         const hashedPassword = await hashPassword(password)
 
@@ -82,9 +74,10 @@ export async function signUp(formData: FormData) {
             data: {
                 email,
                 hashedPassword,
-                role: role as UserRole,
+                role: role as any,
                 name,
                 isActive: true,
+                // Email verification starts as null
                 ...(role === "STUDENT" && {
                     student: { create: {} },
                 }),
@@ -103,65 +96,60 @@ export async function signUp(formData: FormData) {
             },
         })
 
-        // Auto-verify for students and coordinators (TODO: Send verification email)
-        if (role === "STUDENT" || role === "COORDINATOR") {
-            await prisma.user.update({
-                where: { id: user.id },
-                data: { emailVerified: new Date() },
-            })
-        }
+        // Generate verification token
+        const token = await generateVerificationToken(user.id)
 
-        // Create session
+        // Get user's locale from cookie (default to 'en')
+        const cookieStore = await cookies()
+        const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
+
+        // Send verification email with user's locale
+        await sendVerificationEmail(user.email, user.name || 'User', token, locale)
+
+        // Create session (user can browse but with limited access until verified)
         await createSession(user.id, user.email, user.role, user.name || undefined)
 
-        return { success: true }
+        return { success: true, needsVerification: true }
     } catch (error) {
         console.error("Sign up error:", error)
         return { error: "Failed to create account. Please try again." }
     }
 }
 
-// Sign in action
 export async function signIn(formData: FormData) {
-    // Validate input
-    const validatedFields = signInSchema.safeParse({
+    // Extract and validate form data
+    const rawData = {
         email: formData.get("email"),
         password: formData.get("password"),
-    })
-
-    if (!validatedFields.success) {
-        return {
-            error: validatedFields.error.issues[0].message,
-        }
     }
 
-    const { email, password } = validatedFields.data
+    // Validate with Zod
+    const parsed = signInSchema.safeParse(rawData)
+    if (!parsed.success) {
+        return { error: parsed.error.issues[0].message }
+    }
+
+    const { email, password } = parsed.data
 
     try {
-        // Find user
+        // Find user by email
         const user = await prisma.user.findUnique({
             where: { email },
         })
 
-        if (!user || !user.hashedPassword) {
+        if (!user) {
             return { error: "Invalid email or password" }
         }
 
-        // Check if account is active
-        if (!user.isActive || user.isSuspended) {
-            return { error: "Account is inactive or suspended" }
-        }
-
         // Verify password
-        const isValidPassword = await verifyPassword(password, user.hashedPassword)
-
+        const isValidPassword = await verifyPassword(password, user.hashedPassword!)
         if (!isValidPassword) {
             return { error: "Invalid email or password" }
         }
 
-        // Check email verification (except for organizations)
-        if (user.role !== "ORGANIZATION" && !user.emailVerified) {
-            return { error: "Please verify your email address first" }
+        // Check if account is active
+        if (!user.isActive) {
+            return { error: "Your account has been deactivated. Please contact support." }
         }
 
         // Update last login
@@ -180,8 +168,36 @@ export async function signIn(formData: FormData) {
     }
 }
 
-// Sign out action
 export async function signOut() {
     await destroySession()
     redirect("/login")
+}
+
+export async function verifyEmail(token: string) {
+    try {
+        // Verify token
+        const result = await verifyEmailToken(token)
+
+        if (!result.valid) {
+            return { success: false, error: result.error }
+        }
+
+        // Update user email verification status
+        const user = await prisma.user.update({
+            where: { id: result.userId },
+            data: { emailVerified: new Date() },
+        })
+
+        // Get user's locale from cookie (default to 'en')
+        const cookieStore = await cookies()
+        const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
+
+        // Send welcome email with user's locale
+        await sendWelcomeEmail(user.email, user.name || 'User', locale)
+
+        return { success: true }
+    } catch (error) {
+        console.error('Email verification error:', error)
+        return { success: false, error: 'Failed to verify email' }
+    }
 }

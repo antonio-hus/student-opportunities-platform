@@ -46,11 +46,6 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL("/login", request.url))
     }
 
-    // Redirect to dashboard if accessing auth pages with session
-    if (isAuthPage && session.isLoggedIn) {
-        return NextResponse.redirect(new URL("/dashboard", request.url))
-    }
-
     // Return response
     return response
 }
