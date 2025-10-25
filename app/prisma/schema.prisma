@@ -1,0 +1,376 @@
+// This is your Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum UserRole {
+  STUDENT
+  COORDINATOR
+  ORGANIZATION
+  ADMINISTRATOR
+}
+
+enum ProjectStatus {
+  DRAFT
+  PENDING_REVIEW
+  COORDINATOR_ASSIGNED
+  PUBLISHED
+  IN_PROGRESS
+  COMPLETED
+  ARCHIVED
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  WITHDRAWN
+}
+
+enum OrganizationType {
+  NGO
+  SMALL_BUSINESS
+  STARTUP
+  NON_PROFIT
+  SOCIAL_ENTERPRISE
+  OTHER
+}
+
+enum ProjectCategory {
+  DIGITALIZATION
+  COMMUNICATION
+  RESEARCH
+  COMMUNITY_SERVICES
+  MARKETING
+  DESIGN
+  SOFTWARE_DEVELOPMENT
+  DATA_ANALYSIS
+  EVENT_MANAGEMENT
+  OTHER
+}
+
+enum PerformanceRating {
+  EXCELLENT
+  VERY_GOOD
+  GOOD
+  SATISFACTORY
+  NEEDS_IMPROVEMENT
+}
+
+// ============================================================================
+// USER MODEL
+// ============================================================================
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  emailVerified     DateTime?
+  hashedPassword    String?
+  role              UserRole
+
+  name              String?
+  profilePictureUrl String?
+
+  verificationToken String?   @unique
+  verificationTokenExpiry DateTime?
+
+  resetToken        String?   @unique
+  resetTokenExpiry  DateTime?
+
+  isActive          Boolean   @default(true)
+  isSuspended       Boolean   @default(false)
+
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  lastLoginAt       DateTime?
+
+  student           Student?
+  coordinator       Coordinator?
+  organization      Organization?
+  administrator     Administrator?
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+// ============================================================================
+// STUDENT MODEL
+// ============================================================================
+
+model Student {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  studyProgram    String?
+  yearOfStudy     Int?
+  studentId       String?
+
+  bio             String?  @db.Text
+  skills          String[]
+  interests       String[]
+  resumeUrl       String?
+
+  totalHoursContributed Int @default(0)
+  projectsCompleted     Int @default(0)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  applications    Application[]
+  completions     ProjectCompletion[]
+
+  @@index([userId])
+  @@index([studyProgram])
+  @@map("students")
+}
+
+// ============================================================================
+// COORDINATOR MODEL
+// ============================================================================
+
+model Coordinator {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  department      String?
+  title           String?
+  areasOfExpertise String[]
+  contactEmail    String?
+  contactPhone    String?
+
+  bio             String?  @db.Text
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  supervisedProjects Project[] @relation("CoordinatorProjects")
+  projectCompletions ProjectCompletion[]
+
+  @@index([userId])
+  @@index([department])
+  @@map("coordinators")
+}
+
+// ============================================================================
+// ORGANIZATION MODEL
+// ============================================================================
+
+model Organization {
+  id                String           @id @default(cuid())
+  userId            String           @unique
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  organizationName  String
+  type              OrganizationType
+  description       String?          @db.Text
+
+  contactPerson     String?
+  contactEmail      String?
+  contactPhone      String?
+  websiteUrl        String?
+  facebookUrl       String?
+
+  address           String?
+  city              String?
+  country           String?          @default("Romania")
+
+  isVerified        Boolean          @default(false)
+  verifiedAt        DateTime?
+  verifiedBy        String?
+
+  totalProjects     Int              @default(0)
+  completedProjects Int              @default(0)
+
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  projects          Project[]
+
+  @@index([userId])
+  @@index([isVerified])
+  @@index([type])
+  @@map("organizations")
+}
+
+// ============================================================================
+// ADMINISTRATOR MODEL
+// ============================================================================
+
+model Administrator {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  department      String?
+  permissions     String[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@map("administrators")
+}
+
+// ============================================================================
+// PROJECT MODEL
+// ============================================================================
+
+model Project {
+  id                    String          @id @default(cuid())
+
+  title                 String
+  description           String          @db.Text
+  category              ProjectCategory
+
+  requiredSkills        String[]
+  estimatedHoursPerWeek Int?
+  estimatedDurationWeeks Int?
+  numberOfStudents      Int             @default(1)
+
+  status                ProjectStatus   @default(DRAFT)
+  rejectionReason       String?         @db.Text
+
+  organizationId        String
+  organization          Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  coordinatorId         String?
+  coordinator           Coordinator?    @relation("CoordinatorProjects", fields: [coordinatorId], references: [id], onDelete: SetNull)
+
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  publishedAt           DateTime?
+  startedAt             DateTime?
+  completedAt           DateTime?
+
+  applications          Application[]
+  completions           ProjectCompletion[]
+
+  @@index([organizationId])
+  @@index([coordinatorId])
+  @@index([status])
+  @@index([category])
+  @@index([createdAt])
+  @@map("projects")
+}
+
+// ============================================================================
+// APPLICATION MODEL
+// ============================================================================
+
+model Application {
+  id                  String            @id @default(cuid())
+
+  studentId           String
+  student             Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  projectId           String
+  project             Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  motivationStatement String            @db.Text
+  status              ApplicationStatus @default(PENDING)
+
+  reviewedBy          String?
+  reviewedAt          DateTime?
+  rejectionReason     String?           @db.Text
+
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  @@unique([studentId, projectId])
+  @@index([studentId])
+  @@index([projectId])
+  @@index([status])
+  @@map("applications")
+}
+
+// ============================================================================
+// PROJECT COMPLETION MODEL
+// ============================================================================
+
+model ProjectCompletion {
+  id                  String            @id @default(cuid())
+
+  projectId           String
+  project             Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  studentId           String
+  student             Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  coordinatorId       String
+  coordinator         Coordinator       @relation(fields: [coordinatorId], references: [id], onDelete: Cascade)
+
+  roleDescription     String            @db.Text
+  actualHoursWorked   Int?
+  actualDurationWeeks Int?
+
+  performanceRating   PerformanceRating
+  writtenEvaluation   String            @db.Text
+
+  keyAchievements     String[]
+  skillsDeveloped     String[]
+
+  isVisibleInPortfolio Boolean          @default(true)
+
+  completedAt         DateTime          @default(now())
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  @@unique([projectId, studentId])
+  @@index([studentId])
+  @@index([projectId])
+  @@index([coordinatorId])
+  @@index([completedAt])
+  @@map("project_completions")
+}
+
+// ============================================================================
+// PLATFORM CONFIGURATION MODEL
+// ============================================================================
+
+model PlatformConfiguration {
+  id                        String   @id @default(cuid())
+
+  universityName            String
+  universityLogoUrl         String?
+  primaryColor              String   @default("#007bff")
+  secondaryColor            String   @default("#6c757d")
+
+  studentEmailDomain        String?
+  staffEmailDomain          String?
+  allowPublicRegistration   Boolean  @default(false)
+
+  requireOrgVerification    Boolean  @default(true)
+  requireProjectApproval    Boolean  @default(true)
+  enablePortfolioFeature    Boolean  @default(true)
+
+  smtpHost                  String?
+  smtpPort                  Int?
+  smtpUser                  String?
+  smtpPassword              String?
+  emailFromAddress          String?
+  emailFromName             String?
+
+  isMaintenanceMode         Boolean  @default(false)
+  maintenanceMessage        String?  @db.Text
+
+  totalUsers                Int      @default(0)
+  totalProjects             Int      @default(0)
+  totalCompletions          Int      @default(0)
+
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  @@map("platform_configuration")
+}

@@ -1,12 +1,18 @@
-import createNextIntlPlugin from 'next-intl/plugin';
+/////////////////////////////
+///    IMPORTS SECTION    ///
+/////////////////////////////
+// Next Libraries
 import {NextConfig} from "next";
+import createNextIntlPlugin from 'next-intl/plugin';
 
+/////////////////////////////
+///    CONFIGS SECTION    ///
+/////////////////////////////
+// Application Configs
+const nextConfig: NextConfig = {};
+
+// Internationalization Configs
 const withNextIntl = createNextIntlPlugin('./i18n/config.ts');
-
-const nextConfig: NextConfig = {
-
-};
-
 export default withNextIntl(nextConfig);
 
 
