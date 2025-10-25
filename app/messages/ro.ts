@@ -14,6 +14,7 @@ export default {
                 subtitle: "Bine ai revenit pe platformă",
                 email: "Email",
                 password: "Parolă",
+                forgotPassword: "Ai uitat parola?",
                 signIn: "Autentifică-te",
                 signingIn: "Se autentifică...",
                 noAccount: "Nu ai un cont?",
@@ -34,18 +35,41 @@ export default {
                 creatingAccount: "Se creează contul...",
                 hasAccount: "Ai deja un cont?",
                 signIn: "Autentifică-te"
+            },
+            verifyEmail: {
+                title: "Verificare Email",
+                subtitle: "Te rugăm să aștepți în timp ce verificăm adresa ta de email",
+                verifying: "Se verifică emailul...",
+                success: "Email verificat cu succes!",
+                failed: "Verificarea a eșuat",
+                noToken: "Nu a fost furnizat niciun token de verificare",
+                redirecting: "Redirecționare către dashboard...",
+                backToLogin: "Înapoi la autentificare"
+            },
+            forgotPassword: {
+                title: "Parolă Uitată",
+                subtitle: "Introdu emailul pentru a primi un link de resetare",
+                email: "Email",
+                sendResetLink: "Trimite Link de Resetare",
+                sending: "Se trimite...",
+                success: "Dacă există un cont, un email de resetare a fost trimis",
+                backToLogin: "Înapoi la autentificare"
+            },
+            resetPassword: {
+                title: "Resetare Parolă",
+                subtitle: "Introdu noua parolă",
+                newPassword: "Parolă Nouă",
+                confirmPassword: "Confirmă Parola",
+                passwordHint: "Minim 8 caractere",
+                passwordMismatch: "Parolele nu se potrivesc",
+                noToken: "Lipsește tokenul de resetare",
+                invalidToken: "Token de resetare invalid sau expirat",
+                verifyingToken: "Se verifică linkul de resetare...",
+                requestNewLink: "Solicită un nou link de resetare",
+                resetPassword: "Resetează Parola",
+                resetting: "Se resetează..."
             }
         },
-        verifyEmail: {
-            title: "Verificare Email",
-            subtitle: "Te rugăm să aștepți în timp ce verificăm adresa ta de email",
-            verifying: "Se verifică emailul...",
-            success: "Email verificat cu succes!",
-            failed: "Verificarea a eșuat",
-            noToken: "Nu a fost furnizat niciun token de verificare",
-            redirecting: "Redirecționare către dashboard...",
-            backToLogin: "Înapoi la autentificare"
-        }
     },
     email: {
         verification: {
@@ -64,6 +88,16 @@ export default {
             greeting: "Bine ai venit",
             body: "Emailul tău a fost verificat cu succes. Acum poți accesa toate funcționalitățile platformei.",
             buttonText: "Mergi la Dashboard"
+        },
+        passwordReset: {
+            from: "Platforma Universitară",
+            subject: "Resetează-ți parola",
+            greeting: "Bună ziua",
+            body: "Ai solicitat resetarea parolei. Fă clic pe butonul de mai jos pentru a crea o parolă nouă:",
+            buttonText: "Resetează Parola",
+            orCopy: "Sau copiază și lipește acest link în browser:",
+            expiry: "Acest link va expira într-o oră.",
+            ignore: "Dacă nu ai solicitat o resetare a parolei, poți ignora în siguranță acest email."
         }
     }
 } as const;

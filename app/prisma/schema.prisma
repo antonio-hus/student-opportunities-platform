@@ -82,6 +82,8 @@ model User {
 
   verificationTokens VerificationToken[]
 
+  passwordResetTokens PasswordResetToken[]
+
   isActive          Boolean   @default(true)
   isSuspended       Boolean   @default(false)
 
@@ -385,4 +387,21 @@ model VerificationToken {
 
   @@index([userId])
   @@index([token])
+}
+
+// ============================================================================
+// PASSWORD RESET TOKENS
+// ============================================================================
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("password_reset_tokens")
 }

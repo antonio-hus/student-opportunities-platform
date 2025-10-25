@@ -4,17 +4,22 @@
 ///    IMPORTS SECTION    ///
 /////////////////////////////
 // Next Libraries
-import { redirect } from "next/navigation"
-import { cookies } from "next/headers"
+import {redirect} from "next/navigation"
+import {cookies} from "next/headers"
 // Third-party Libraries
-import { z } from "zod"
+import {z} from "zod"
 // Project Libraries
 import prisma from "@/lib/prisma"
-import { hashPassword, verifyPassword } from "@/lib/auth/password"
-import { createSession, destroySession } from "@/lib/auth/session"
-import { validateEmailDomain } from "@/lib/auth/validation"
-import { generateVerificationToken, verifyEmailToken } from "@/lib/email/token"
-import { sendVerificationEmail, sendWelcomeEmail } from "@/lib/email/sender"
+import {hashPassword, verifyPassword} from "@/lib/auth/password"
+import {createSession, destroySession} from "@/lib/auth/session"
+import {validateEmailDomain} from "@/lib/auth/validation"
+import {generateVerificationToken, verifyEmailToken} from "@/lib/email/account-validation-token"
+import {sendPasswordResetEmail, sendVerificationEmail, sendWelcomeEmail} from "@/lib/email/sender"
+import {
+    deletePasswordResetToken,
+    generatePasswordResetToken,
+    verifyPasswordResetToken
+} from "@/lib/email/password-reset-token";
 
 /////////////////////////////
 ///   VALIDATION SCHEMAS  ///
@@ -199,5 +204,88 @@ export async function verifyEmail(token: string) {
     } catch (error) {
         console.error('Email verification error:', error)
         return { success: false, error: 'Failed to verify email' }
+    }
+}
+
+export async function requestPasswordReset(formData: FormData) {
+    const email = formData.get("email") as string
+
+    if (!email) {
+        return { error: "Email is required" }
+    }
+
+    try {
+        // Find user by email
+        const user = await prisma.user.findUnique({
+            where: { email },
+        })
+
+        // Always return success (don't reveal if email exists)
+        if (!user) {
+            return { success: true, message: "If an account exists, a reset email has been sent" }
+        }
+
+        // Generate reset token
+        const token = await generatePasswordResetToken(user.id)
+
+        // Get user's locale
+        const cookieStore = await cookies()
+        const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
+
+        // Send reset email
+        await sendPasswordResetEmail(user.email, user.name || 'User', token, locale)
+
+        return { success: true, message: "If an account exists, a reset email has been sent" }
+    } catch (error) {
+        console.error("Password reset request error:", error)
+        return { error: "Failed to process request. Please try again." }
+    }
+}
+
+export async function resetPassword(formData: FormData) {
+    const token = formData.get("token") as string
+    const password = formData.get("password") as string
+
+    if (!token || !password) {
+        return { error: "Missing required fields" }
+    }
+
+    if (password.length < 8) {
+        return { error: "Password must be at least 8 characters" }
+    }
+
+    try {
+        // Verify token
+        const result = await verifyPasswordResetToken(token)
+
+        if (!result.valid) {
+            return { error: result.error || "Invalid reset token" }
+        }
+
+        // Hash new password
+        const hashedPassword = await hashPassword(password)
+
+        // Update user password
+        await prisma.user.update({
+            where: { id: result.userId },
+            data: { hashedPassword },
+        })
+
+        // Delete used token
+        await deletePasswordResetToken(token)
+
+        return { success: true }
+    } catch (error) {
+        console.error('Password reset error:', error)
+        return { error: 'Failed to reset password' }
+    }
+}
+
+export async function verifyResetToken(token: string) {
+    try {
+        return await verifyPasswordResetToken(token)
+    } catch (error) {
+        console.error('Token verification error:', error)
+        return { valid: false, error: 'Failed to verify token' }
     }
 }

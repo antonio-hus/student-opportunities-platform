@@ -1,12 +1,9 @@
 /////////////////////////////
 ///    IMPORTS SECTION    ///
 /////////////////////////////
-// Next Libraries
-import { redirect } from "next/navigation"
 // Next-intl Libraries
 import { getTranslations } from 'next-intl/server'
 // Project Libraries
-import { verifySession } from "@/lib/auth/dal"
 import LoginForm from "./login-form"
 
 /////////////////////////////

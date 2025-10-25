@@ -4,16 +4,17 @@
 // Next-intl Libraries
 import { getTranslations } from 'next-intl/server'
 // Project Libraries
-import VerifyEmailForm from './verify-email-form'
+import ResetPasswordForm from "./reset-password-form"
 
 /////////////////////////////
 ///   COMPONENT SECTION   ///
 /////////////////////////////
-export default async function VerifyEmailPage({searchParams,}: { searchParams: Promise<{ token?: string }> }) {
-    // Get translations
-    const t = await getTranslations('auth.verifyEmail')
+export default async function ResetPasswordPage({searchParams,}: { searchParams: Promise<{ token?: string }> }) {
 
-    // Await searchParams to access its properties
+    // Get translations
+    const t = await getTranslations('pages.auth.resetPassword')
+
+    // Await searchParams
     const params = await searchParams
     const token = params.token
 
@@ -23,7 +24,7 @@ export default async function VerifyEmailPage({searchParams,}: { searchParams: P
             <p className="text-text-secondary mb-8">
                 {t('subtitle')}
             </p>
-            <VerifyEmailForm token={token} />
+            <ResetPasswordForm token={token} />
         </div>
     )
 }

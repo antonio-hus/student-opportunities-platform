@@ -14,6 +14,7 @@ export default {
                 subtitle: "Welcome back to the platform",
                 email: "Email",
                 password: "Password",
+                forgotPassword: "Forgot password?",
                 signIn: "Sign In",
                 signingIn: "Signing in...",
                 noAccount: "Don't have an account?",
@@ -44,6 +45,29 @@ export default {
                 noToken: "No verification token provided",
                 redirecting: "Redirecting to dashboard...",
                 backToLogin: "Back to login"
+            },
+            forgotPassword: {
+                title: "Forgot Password",
+                subtitle: "Enter your email to receive a password reset link",
+                email: "Email",
+                sendResetLink: "Send Reset Link",
+                sending: "Sending...",
+                success: "If an account exists, a reset email has been sent",
+                backToLogin: "Back to login"
+            },
+            resetPassword: {
+                title: "Reset Password",
+                subtitle: "Enter your new password",
+                newPassword: "New Password",
+                confirmPassword: "Confirm Password",
+                passwordHint: "Minimum 8 characters",
+                passwordMismatch: "Passwords do not match",
+                noToken: "No reset token provided",
+                invalidToken: "Invalid or expired reset token",
+                verifyingToken: "Verifying reset link...",
+                requestNewLink: "Request a new reset link",
+                resetPassword: "Reset Password",
+                resetting: "Resetting..."
             }
         },
     },
@@ -64,6 +88,16 @@ export default {
             greeting: "Welcome",
             body: "Your email has been successfully verified. You can now access all features of the platform.",
             buttonText: "Go to Dashboard"
+        },
+        passwordReset: {
+            from: "University Platform",
+            subject: "Reset your password",
+            greeting: "Hello",
+            body: "You requested to reset your password. Click the button below to create a new password:",
+            buttonText: "Reset Password",
+            orCopy: "Or copy and paste this link into your browser:",
+            expiry: "This link will expire in 1 hour.",
+            ignore: "If you didn't request a password reset, you can safely ignore this email."
         }
     }
 } as const;

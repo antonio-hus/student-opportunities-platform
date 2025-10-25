@@ -4,18 +4,14 @@
 // Next-intl Libraries
 import { getTranslations } from 'next-intl/server'
 // Project Libraries
-import VerifyEmailForm from './verify-email-form'
+import ForgotPasswordForm from "./forgot-password-form"
 
 /////////////////////////////
 ///   COMPONENT SECTION   ///
 /////////////////////////////
-export default async function VerifyEmailPage({searchParams,}: { searchParams: Promise<{ token?: string }> }) {
+export default async function ForgotPasswordPage() {
     // Get translations
-    const t = await getTranslations('auth.verifyEmail')
-
-    // Await searchParams to access its properties
-    const params = await searchParams
-    const token = params.token
+    const t = await getTranslations('pages.auth.forgotPassword')
 
     return (
         <div className="container max-w-md mx-auto py-16 px-4">
@@ -23,7 +19,7 @@ export default async function VerifyEmailPage({searchParams,}: { searchParams: P
             <p className="text-text-secondary mb-8">
                 {t('subtitle')}
             </p>
-            <VerifyEmailForm token={token} />
+            <ForgotPasswordForm />
         </div>
     )
 }
