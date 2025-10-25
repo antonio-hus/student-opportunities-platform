@@ -14,19 +14,15 @@
     "db:migrate": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:migrate:reset": "prisma migrate reset",
-    "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "db:push": "prisma db push",
-    "db:reset": "prisma migrate reset && npm run db:seed",
-    "db:setup": "prisma generate && prisma migrate deploy && npm run db:seed",
+    "db:reset": "prisma migrate reset",
+    "db:setup": "prisma generate && prisma migrate deploy",
     "theme:generate": "tsx scripts/generate-css-vars.ts",
     "postinstall": "prisma generate",
     "clean": "rm -rf .next node_modules",
     "clean:install": "npm run clean && npm install",
     "test": "echo \"Error: no tests yet\" && exit 0"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.0",
@@ -37,6 +33,7 @@
     "autoprefixer": "^10.4.21",
     "bcryptjs": "^3.0.2",
     "iron-session": "^8.0.4",
+    "lru-cache": "^11.2.2",
     "next": "16.0.0",
     "next-intl": "^4.4.0",
     "node-cron": "^4.2.1",

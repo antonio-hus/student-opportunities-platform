@@ -11,7 +11,8 @@ import prisma from '@/lib/prisma'
 /////////////////////////////
 export async function cleanupExpiredTokens() {
     try {
-        const result = await prisma.verificationToken.deleteMany({
+        // Delete expired verification tokens
+        const verificationResult = await prisma.verificationToken.deleteMany({
             where: {
                 expiresAt: {
                     lt: new Date()
@@ -19,14 +20,33 @@ export async function cleanupExpiredTokens() {
             }
         })
 
-        if (result.count > 0) {
-            console.log(`[${new Date().toISOString()}] Cleaned up ${result.count} expired verification tokens`)
+        // Delete expired password reset tokens
+        const passwordResetResult = await prisma.passwordResetToken.deleteMany({
+            where: {
+                expiresAt: {
+                    lt: new Date()
+                }
+            }
+        })
+
+        const totalDeleted = verificationResult.count + passwordResetResult.count
+
+        if (totalDeleted > 0) {
+            console.log(`[${new Date().toISOString()}] Cleaned up ${verificationResult.count} verification tokens and ${passwordResetResult.count} password reset tokens`)
         }
 
-        return result.count
+        return {
+            verificationTokens: verificationResult.count,
+            passwordResetTokens: passwordResetResult.count,
+            total: totalDeleted
+        }
     } catch (error) {
         console.error('Token cleanup error:', error)
-        return 0
+        return {
+            verificationTokens: 0,
+            passwordResetTokens: 0,
+            total: 0
+        }
     }
 }
 

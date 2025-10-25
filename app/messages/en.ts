@@ -2,6 +2,7 @@ export default {
     metadata: {
         title: "University Practical Work Opportunities Platform",
         description: "Made by Antonio Hus as part of bachelor thesis",
+        platformName: "University Platform",
     },
     pages: {
         home: {
@@ -68,6 +69,16 @@ export default {
                 requestNewLink: "Request a new reset link",
                 resetPassword: "Reset Password",
                 resetting: "Resetting..."
+            },
+            accessControl: {
+                accessDenied: "Access Denied",
+                noPermission: "You don't have permission to access this page.",
+                goToDashboard: "Go to Dashboard"
+            },
+            session: {
+                expired: "Your session has expired",
+                pleaseSignIn: "Please sign in again to continue",
+                refreshing: "Refreshing session..."
             }
         },
     },
@@ -98,6 +109,40 @@ export default {
             orCopy: "Or copy and paste this link into your browser:",
             expiry: "This link will expire in 1 hour.",
             ignore: "If you didn't request a password reset, you can safely ignore this email."
+        },
+    },
+    errors: {
+        validation: {
+            nameMinLength: "Name must be at least 2 characters",
+            invalidEmail: "Invalid email address",
+            passwordMinLength: "Password must be at least 8 characters",
+            passwordRequired: "Password is required",
+            emailRequired: "Email is required",
+            missingFields: "Missing required fields"
+        },
+        auth: {
+            accountExists: "An account with this email already exists",
+            invalidCredentials: "Invalid email or password",
+            accountDeactivated: "Your account has been deactivated. Please contact support.",
+            signUpFailed: "Failed to create account. Please try again.",
+            signInFailed: "Failed to sign in. Please try again.",
+            verificationFailed: "Failed to verify email",
+            resetRequestFailed: "Failed to process request. Please try again.",
+            resetFailed: "Failed to reset password",
+            invalidResetToken: "Invalid reset token",
+            tokenVerificationFailed: "Failed to verify token",
+            tooManyAttempts: "Too many login attempts. Please try again in {minutes} minutes.",
+            tooManySignups: "Too many signup attempts. Please try again in {minutes} minutes.",
+            tooManyResetRequests: "Too many password reset requests. Please try again in {minutes} minutes.",
+        },
+        email: {
+            verificationFailed: "Failed to send verification email",
+            resetFailed: "Failed to send password reset email"
         }
-    }
+    },
+    success: {
+        auth: {
+            resetEmailSent: "If an account exists, a reset email has been sent"
+        }
+    },
 } as const;

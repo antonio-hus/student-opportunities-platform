@@ -1,68 +1,90 @@
 /////////////////////////////
 ///    IMPORTS SECTION    ///
 /////////////////////////////
-// Third-party Libraries
-import { getIronSession, SessionOptions } from "iron-session"
 // Next Libraries
-import { cookies } from "next/headers"
-// Prisma Libraries
-import { UserRole } from "@prisma/client"
+import { cookies } from 'next/headers'
+// Third-party Libraries
+import { getIronSession, SessionOptions } from 'iron-session'
 
 /////////////////////////////
-///   TYPE DEFINITIONS    ///
+///    TYPE DEFINITIONS   ///
 /////////////////////////////
-// Session data structure stored in encrypted cookie
 export interface SessionData {
     userId: string
     email: string
-    role: UserRole
+    role: string
     name?: string
-    isLoggedIn: boolean
+    isAuth: boolean
+    createdAt: number
+    expiresAt: number
 }
 
 /////////////////////////////
-///    CONFIGS SECTION    ///
+///   SESSION OPTIONS     ///
 /////////////////////////////
-// Iron-session configuration for encrypted cookies
 export const sessionOptions: SessionOptions = {
     password: process.env.SESSION_SECRET!,
-    cookieName: "university-platform-session",
+    cookieName: 'session',
+    ttl: 60 * 60 * 24 * 7, // 7 days
     cookieOptions: {
-        // Prevent client-side JavaScript access
         httpOnly: true,
-        // HTTPS only in production
-        secure: process.env.NODE_ENV === "production",
-        // CSRF protection
-        sameSite: "lax",
-        // 7 days
-        maxAge: 60 * 60 * 24 * 7,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7, // 7 days
     },
 }
 
 /////////////////////////////
-///  SESSION  MANAGEMENT  ///
+///  SESSION MANAGEMENT   ///
 /////////////////////////////
-// Get current session from encrypted cookie
 export async function getSession() {
     const cookieStore = await cookies()
     return getIronSession<SessionData>(cookieStore, sessionOptions)
 }
 
-// Create new session with user data
-export async function createSession(userId: string, email: string, role: UserRole, name?: string) {
+export async function createSession(
+    userId: string,
+    email: string,
+    role: string,
+    name?: string
+) {
     const session = await getSession()
+    const now = Date.now()
 
     session.userId = userId
     session.email = email
     session.role = role
     session.name = name
-    session.isLoggedIn = true
+    session.isAuth = true
+    session.createdAt = now
+    session.expiresAt = now + (sessionOptions.ttl! * 1000)
 
     await session.save()
 }
 
-// Destroy current session (logout)
 export async function destroySession() {
     const session = await getSession()
     session.destroy()
+}
+
+// Check if session is expired
+export async function isSessionExpired(): Promise<boolean> {
+    const session = await getSession()
+
+    if (!session.isAuth || !session.expiresAt) {
+        return true
+    }
+
+    return Date.now() > session.expiresAt
+}
+
+// Refresh session expiry
+export async function refreshSession() {
+    const session = await getSession()
+
+    if (session.isAuth) {
+        const now = Date.now()
+        session.expiresAt = now + (sessionOptions.ttl! * 1000)
+        await session.save()
+    }
 }

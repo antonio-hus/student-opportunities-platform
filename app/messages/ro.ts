@@ -2,6 +2,7 @@ export default {
     metadata: {
         title: "Platforma Universitară pentru Oportunități de Practică",
         description: "Realizat de Antonio Hus ca parte a tezei de licență",
+        platformName: "Platforma Universitară",
     },
     pages: {
         home: {
@@ -67,7 +68,17 @@ export default {
                 verifyingToken: "Se verifică linkul de resetare...",
                 requestNewLink: "Solicită un nou link de resetare",
                 resetPassword: "Resetează Parola",
-                resetting: "Se resetează..."
+                resetting: "Se resetează...",
+            },
+            accessControl: {
+                accessDenied: "Acces Interzis",
+                noPermission: "Nu ai permisiunea de a accesa această pagină.",
+                goToDashboard: "Mergi la Dashboard"
+            },
+            session: {
+                expired: "Sesiunea ta a expirat",
+                pleaseSignIn: "Te rugăm să te autentifici din nou pentru a continua",
+                refreshing: "Se reîmprospătează sesiunea..."
             }
         },
     },
@@ -99,5 +110,39 @@ export default {
             expiry: "Acest link va expira într-o oră.",
             ignore: "Dacă nu ai solicitat o resetare a parolei, poți ignora în siguranță acest email."
         }
-    }
+    },
+    errors: {
+        validation: {
+            nameMinLength: "Numele trebuie să aibă cel puțin 2 caractere",
+            invalidEmail: "Adresă de email invalidă",
+            passwordMinLength: "Parola trebuie să aibă cel puțin 8 caractere",
+            passwordRequired: "Parola este obligatorie",
+            emailRequired: "Emailul este obligatoriu",
+            missingFields: "Lipsesc câmpuri obligatorii"
+        },
+        auth: {
+            accountExists: "Există deja un cont cu acest email",
+            invalidCredentials: "Email sau parolă invalidă",
+            accountDeactivated: "Contul tău a fost dezactivat. Te rugăm să contactezi suportul.",
+            signUpFailed: "Crearea contului a eșuat. Te rugăm să încerci din nou.",
+            signInFailed: "Autentificarea a eșuat. Te rugăm să încerci din nou.",
+            verificationFailed: "Verificarea emailului a eșuat",
+            resetRequestFailed: "Procesarea cererii a eșuat. Te rugăm să încerci din nou.",
+            resetFailed: "Resetarea parolei a eșuat",
+            invalidResetToken: "Token de resetare invalid",
+            tokenVerificationFailed: "Verificarea tokenului a eșuat",
+            tooManyAttempts: "Prea multe încercări de autentificare. Te rugăm să încerci din nou în {minutes} minute.",
+            tooManySignups: "Prea multe încercări de înregistrare. Te rugăm să încerci din nou în {minutes} minute.",
+            tooManyResetRequests: "Prea multe cereri de resetare a parolei. Te rugăm să încerci din nou în {minutes} minute.",
+        },
+        email: {
+            verificationFailed: "Trimiterea emailului de verificare a eșuat",
+            resetFailed: "Trimiterea emailului de resetare a eșuat"
+        }
+    },
+    success: {
+        auth: {
+            resetEmailSent: "Dacă există un cont, un email de resetare a fost trimis"
+        }
+    },
 } as const;

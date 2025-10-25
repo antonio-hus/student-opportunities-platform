@@ -11,6 +11,7 @@ import { getMessages, getTranslations } from 'next-intl/server'
 import "./globals.css"
 // Project Libraries
 import { startCleanupScheduler } from '@/lib/services/cleanup.service'
+import {AuthProvider} from "@/lib/auth/context";
 
 /////////////////////////////
 ///   METADATA  SECTION   ///
@@ -40,7 +41,9 @@ export default async function RootLayout({children}: { children: React.ReactNode
       <html lang="en" className="bg-background text-foreground">
         <body className="antialiased">
           <NextIntlClientProvider messages={messages}>
-            {children}
+              <AuthProvider>
+                  {children}
+              </AuthProvider>
           </NextIntlClientProvider>
         </body>
       </html>

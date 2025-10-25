@@ -4,7 +4,7 @@
 ///    IMPORTS SECTION    ///
 /////////////////////////////
 // React Libraries
-import { useState } from "react"
+import React, { useState } from "react"
 // Next Libraries
 import { useRouter } from "next/navigation"
 // Next-intl Libraries

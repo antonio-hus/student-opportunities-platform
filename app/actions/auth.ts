@@ -19,26 +19,28 @@ import {
     deletePasswordResetToken,
     generatePasswordResetToken,
     verifyPasswordResetToken
-} from "@/lib/email/password-reset-token";
+} from "@/lib/email/password-reset-token"
+import {getServerTranslations} from "@/i18n/config"
+import {loginLimiter, passwordResetLimiter, signupLimiter} from "@/lib/auth/rate-limit";
+import {getClientIp} from "@/lib/auth/get-client-ip";
 
 /////////////////////////////
-///   VALIDATION SCHEMAS  ///
+///   SERVER ACTIONS      ///
 /////////////////////////////
-// Sign up validation schema
-const signUpSchema = z.object({
-    name: z.string().min(2, "Name must be at least 2 characters"),
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    role: z.enum(["STUDENT", "COORDINATOR", "ORGANIZATION"]),
-})
-
-// Sign in validation schema
-const signInSchema = z.object({
-    email: z.string().email("Invalid email address"),
-    password: z.string().min(1, "Password is required"),
-})
-
 export async function signUp(formData: FormData) {
+    const { t } = await getServerTranslations()
+
+    // Get client IP for rate limiting
+    const ip = await getClientIp()
+    const rateLimitResult = signupLimiter.check(3, ip)
+
+    if (!rateLimitResult.success) {
+        const waitMinutes = Math.ceil((rateLimitResult.reset - Date.now()) / 60000)
+        return {
+            error: t('errors.auth.tooManySignups').replace('{minutes}', waitMinutes.toString())
+        }
+    }
+
     // Extract and validate form data
     const rawData = {
         name: formData.get("name"),
@@ -46,6 +48,14 @@ export async function signUp(formData: FormData) {
         password: formData.get("password"),
         role: formData.get("role"),
     }
+
+    // Create schema with translated messages
+    const signUpSchema = z.object({
+        name: z.string().min(2, t('errors.validation.nameMinLength')),
+        email: z.string().email(t('errors.validation.invalidEmail')),
+        password: z.string().min(8, t('errors.validation.passwordMinLength')),
+        role: z.enum(["STUDENT", "COORDINATOR", "ORGANIZATION"]),
+    })
 
     // Validate with Zod
     const parsed = signUpSchema.safeParse(rawData)
@@ -68,7 +78,7 @@ export async function signUp(formData: FormData) {
         })
 
         if (existingUser) {
-            return { error: "An account with this email already exists" }
+            return { error: t('errors.auth.accountExists') }
         }
 
         // Hash password
@@ -82,7 +92,6 @@ export async function signUp(formData: FormData) {
                 role: role as any,
                 name,
                 isActive: true,
-                // Email verification starts as null
                 ...(role === "STUDENT" && {
                     student: { create: {} },
                 }),
@@ -104,29 +113,47 @@ export async function signUp(formData: FormData) {
         // Generate verification token
         const token = await generateVerificationToken(user.id)
 
-        // Get user's locale from cookie (default to 'en')
+        // Get user's locale from cookie
         const cookieStore = await cookies()
         const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
 
-        // Send verification email with user's locale
+        // Send verification email
         await sendVerificationEmail(user.email, user.name || 'User', token, locale)
 
-        // Create session (user can browse but with limited access until verified)
+        // Create session
         await createSession(user.id, user.email, user.role, user.name || undefined)
 
         return { success: true, needsVerification: true }
     } catch (error) {
         console.error("Sign up error:", error)
-        return { error: "Failed to create account. Please try again." }
+        return { error: t('errors.auth.signUpFailed') }
     }
 }
 
 export async function signIn(formData: FormData) {
+    const { t } = await getServerTranslations()
+
+    const ip = await getClientIp()
+    const rateLimitResult = loginLimiter.check(5, ip)
+
+    if (!rateLimitResult.success) {
+        const waitMinutes = Math.ceil((rateLimitResult.reset - Date.now()) / 60000)
+        return {
+            error: t('errors.auth.tooManyAttempts').replace('{minutes}', waitMinutes.toString())
+        }
+    }
+
     // Extract and validate form data
     const rawData = {
         email: formData.get("email"),
         password: formData.get("password"),
     }
+
+    // Create schema with translated messages
+    const signInSchema = z.object({
+        email: z.string().email(t('errors.validation.invalidEmail')),
+        password: z.string().min(1, t('errors.validation.passwordRequired')),
+    })
 
     // Validate with Zod
     const parsed = signInSchema.safeParse(rawData)
@@ -143,18 +170,18 @@ export async function signIn(formData: FormData) {
         })
 
         if (!user) {
-            return { error: "Invalid email or password" }
+            return { error: t('errors.auth.invalidCredentials') }
         }
 
         // Verify password
         const isValidPassword = await verifyPassword(password, user.hashedPassword!)
         if (!isValidPassword) {
-            return { error: "Invalid email or password" }
+            return { error: t('errors.auth.invalidCredentials') }
         }
 
         // Check if account is active
         if (!user.isActive) {
-            return { error: "Your account has been deactivated. Please contact support." }
+            return { error: t('errors.auth.accountDeactivated') }
         }
 
         // Update last login
@@ -169,7 +196,7 @@ export async function signIn(formData: FormData) {
         return { success: true }
     } catch (error) {
         console.error("Sign in error:", error)
-        return { error: "Failed to sign in. Please try again." }
+        return { error: t('errors.auth.signInFailed') }
     }
 }
 
@@ -179,6 +206,8 @@ export async function signOut() {
 }
 
 export async function verifyEmail(token: string) {
+    const { t, locale } = await getServerTranslations()
+
     try {
         // Verify token
         const result = await verifyEmailToken(token)
@@ -193,25 +222,33 @@ export async function verifyEmail(token: string) {
             data: { emailVerified: new Date() },
         })
 
-        // Get user's locale from cookie (default to 'en')
-        const cookieStore = await cookies()
-        const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
-
-        // Send welcome email with user's locale
+        // Send welcome email
         await sendWelcomeEmail(user.email, user.name || 'User', locale)
 
         return { success: true }
     } catch (error) {
         console.error('Email verification error:', error)
-        return { success: false, error: 'Failed to verify email' }
+        return { success: false, error: t('errors.auth.verificationFailed') }
     }
 }
 
 export async function requestPasswordReset(formData: FormData) {
+    const { t, locale } = await getServerTranslations()
     const email = formData.get("email") as string
 
     if (!email) {
-        return { error: "Email is required" }
+        return { error: t('errors.validation.emailRequired') }
+    }
+
+    // Rate limit by IP
+    const ip = await getClientIp()
+    const rateLimitResult = passwordResetLimiter.check(3, ip)
+
+    if (!rateLimitResult.success) {
+        const waitMinutes = Math.ceil((rateLimitResult.reset - Date.now()) / 60000)
+        return {
+            error: t('errors.auth.tooManyResetRequests').replace('{minutes}', waitMinutes.toString())
+        }
     }
 
     try {
@@ -222,36 +259,33 @@ export async function requestPasswordReset(formData: FormData) {
 
         // Always return success (don't reveal if email exists)
         if (!user) {
-            return { success: true, message: "If an account exists, a reset email has been sent" }
+            return { success: true, message: t('success.auth.resetEmailSent') }
         }
 
         // Generate reset token
         const token = await generatePasswordResetToken(user.id)
 
-        // Get user's locale
-        const cookieStore = await cookies()
-        const locale = cookieStore.get('NEXT_LOCALE')?.value || 'en'
-
         // Send reset email
         await sendPasswordResetEmail(user.email, user.name || 'User', token, locale)
 
-        return { success: true, message: "If an account exists, a reset email has been sent" }
+        return { success: true, message: t('success.auth.resetEmailSent') }
     } catch (error) {
         console.error("Password reset request error:", error)
-        return { error: "Failed to process request. Please try again." }
+        return { error: t('errors.auth.resetRequestFailed') }
     }
 }
 
 export async function resetPassword(formData: FormData) {
+    const { t } = await getServerTranslations()
     const token = formData.get("token") as string
     const password = formData.get("password") as string
 
     if (!token || !password) {
-        return { error: "Missing required fields" }
+        return { error: t('errors.validation.missingFields') }
     }
 
     if (password.length < 8) {
-        return { error: "Password must be at least 8 characters" }
+        return { error: t('errors.validation.passwordMinLength') }
     }
 
     try {
@@ -259,7 +293,7 @@ export async function resetPassword(formData: FormData) {
         const result = await verifyPasswordResetToken(token)
 
         if (!result.valid) {
-            return { error: result.error || "Invalid reset token" }
+            return { error: result.error || t('errors.auth.invalidResetToken') }
         }
 
         // Hash new password
@@ -277,15 +311,17 @@ export async function resetPassword(formData: FormData) {
         return { success: true }
     } catch (error) {
         console.error('Password reset error:', error)
-        return { error: 'Failed to reset password' }
+        return { error: t('errors.auth.resetFailed') }
     }
 }
 
 export async function verifyResetToken(token: string) {
+    const { t } = await getServerTranslations()
+
     try {
         return await verifyPasswordResetToken(token)
     } catch (error) {
         console.error('Token verification error:', error)
-        return { valid: false, error: 'Failed to verify token' }
+        return { valid: false, error: t('errors.auth.tokenVerificationFailed') }
     }
 }
