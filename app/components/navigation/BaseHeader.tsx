@@ -42,13 +42,7 @@ export type BaseHeaderProps = {
 /////////////////////////////
 ///   COMPONENT SECTION   ///
 /////////////////////////////
-export default function BaseHeader({
-                                       user,
-                                       navItems,
-                                       userIcon: UserIcon,
-                                       roleLabel,
-                                       translationKey
-                                   }: BaseHeaderProps) {
+export default function BaseHeader({user, navItems, userIcon: UserIcon, roleLabel, translationKey}: BaseHeaderProps) {
     const tMeta = useTranslations('metadata')
     const t = useTranslations(translationKey)
     const pathname = usePathname()
@@ -241,7 +235,7 @@ export default function BaseHeader({
                     <div className="border-t border-border p-4">
                         <button
                             onClick={handleSignOut}
-                            className="flex w-full items-center gap-3 rounded-md bg-red-50 px-4 py-3 text-red-600 transition-colors hover:bg-red-100 dark:bg-red-950/30 dark:text-red-400 dark:hover:bg-red-950/50"
+                            className="flex w-full items-center gap-3 rounded-md px-4 py-3 text-text-secondary transition-colors hover:bg-surface-elevated hover:text-text-primary"
                         >
                             <LogOut className="h-5 w-5" />
                             <span className="text-base font-medium">{t('signOut')}</span>
