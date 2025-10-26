@@ -12,7 +12,7 @@ import createNextIntlPlugin from 'next-intl/plugin';
 const nextConfig: NextConfig = {};
 
 // Internationalization Configs
-const withNextIntl = createNextIntlPlugin('./i18n/config.ts');
+const withNextIntl = createNextIntlPlugin('./src/utils/i18n/config.ts')
 export default withNextIntl(nextConfig);
 
 

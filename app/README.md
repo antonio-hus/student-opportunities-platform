@@ -46,9 +46,6 @@ cp .env.example .env
 # Run database migrations
 npm run db:migrate
 
-# Seed initial data
-npm run db:seed
-
 # Start development server
 npm run dev
 ```
@@ -100,7 +97,7 @@ cp your-university-logo.svg public/logo.svg
 
 **Step 1: Edit the theme configuration file**
 
-Edit `lib/theme/colors.ts`:
+Edit `resources/theme/colors.ts`:
 
 ```
 export const themeColors = {
@@ -131,29 +128,6 @@ This will automatically update:
 - Email templates (automatically use the same colors)
 - All UI components
 
-#### Quick Theme Examples
-
-**University Blue Theme:**
-```
-// lib/theme/colors.ts
-primary: '#1e40af',
-primaryHover: '#1e3a8a',
-primaryLight: '#3b82f6',
-```
-
-**University Red Theme:**
-```
-// lib/theme/colors.ts
-primary: '#dc2626',
-primaryHover: '#b91c1c',
-primaryLight: '#ef4444',
-```
-
-**After editing, always run:**
-```
-npm run theme:generate
-```
-
 ---
 
 ### 3. Internationalization (i18n)
@@ -163,14 +137,14 @@ The platform supports multiple languages. Default: English and Romanian.
 #### File Structure
 
 ```
-messages/
+resources/messages/
 ├── en.ts              # English translations
 └── ro.ts              # Romanian translations
 ```
 
 #### Adding/Modifying Languages
 
-**Step 1: Update `i18n/config.ts`**
+**Step 1: Update `src/utils/i18n/ty;es.ts`**
 
 ```
 export const locales = ['en', 'ro', 'de'] as const;  // Add 'de' for German
@@ -179,7 +153,7 @@ export const defaultLocale = 'en' as const;
 
 **Step 2: Create Message File**
 
-Create `messages/de.ts` following the same structure as `en.ts`.
+Create `resources/messages/de.ts` following the same structure as `en.ts`.
 
 ---
 
@@ -237,18 +211,6 @@ npm run db:migrate
 # If migrations exist, just apply them
 npm run db:migrate:deploy
 ```
-
-### Seed Initial Data
-
-```
-npm run db:seed
-```
-
-This creates:
-- Default platform configuration
-- Admin user (email: `admin@youruniversity.ro`, password: `admin123`)
-
-⚠️ **Important**: Change the admin password after first login!
 
 ### Reset Database (Development)
 

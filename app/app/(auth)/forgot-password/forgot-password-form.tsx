@@ -10,7 +10,7 @@ import Link from "next/link"
 // Next-intl Libraries
 import { useTranslations } from 'next-intl'
 // Project Libraries
-import { requestPasswordReset } from "@/actions/auth"
+import { requestPasswordReset } from "@/src/controller/auth-controller"
 
 /////////////////////////////
 ///   COMPONENT SECTION   ///
@@ -55,7 +55,7 @@ export default function ForgotPasswordForm() {
 
             <div>
                 <label htmlFor="email" className="block text-sm font-medium text-text-primary mb-2">
-                    {t('email')}
+                    {t('emailLabel')}
                 </label>
                 <input
                     type="email"
@@ -71,7 +71,7 @@ export default function ForgotPasswordForm() {
                 disabled={loading}
                 className="w-full bg-primary hover:bg-primary-hover text-primary-foreground py-2 px-4 rounded-lg font-medium transition-colors disabled:opacity-50"
             >
-                {loading ? t('sending') : t('sendResetLink')}
+                {loading ? t('sending') : t('sendButton')}
             </button>
 
             <div className="text-center">

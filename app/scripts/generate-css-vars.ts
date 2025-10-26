@@ -5,7 +5,7 @@
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { themeColors } from '@/lib/theme/colors'
+import { themeColors } from '@/resources/theme/colors'
 
 /////////////////////////////
 ///   GENERATOR FUNCTION  ///

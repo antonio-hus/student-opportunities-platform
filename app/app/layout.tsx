@@ -10,42 +10,37 @@ import { getMessages, getTranslations } from 'next-intl/server'
 // Styles
 import "./globals.css"
 // Project Libraries
-import { startCleanupScheduler } from '@/lib/services/cleanup.service'
-import {AuthProvider} from "@/lib/auth/context";
+import { startCleanupScheduler } from '@/src/service/cleanup-service'
 
 /////////////////////////////
 ///   METADATA  SECTION   ///
 /////////////////////////////
-// Generate dynamic metadata with translations
 export async function generateMetadata(): Promise<Metadata> {
-  const t = await getTranslations('metadata')
-  return {
-    title: t('title'),
-    description: t('description'),
-  }
+    const t = await getTranslations('metadata')
+    return {
+        title: t('title'),
+        description: t('description'),
+    }
 }
 
 /////////////////////////////
 ///    LAYOUT  SECTION    ///
 /////////////////////////////
 export default async function RootLayout({children}: { children: React.ReactNode }) {
-  // Load translation messages
-  const messages = await getMessages()
+    const messages = await getMessages()
 
-  // Start scheduler on server startup (only in production)
-  if (process.env.NODE_ENV === 'production' && typeof window === 'undefined') {
-      startCleanupScheduler()
-  }
+    // Start cleanup scheduler on server startup (only in production)
+    if (process.env.NODE_ENV === 'production' && typeof window === 'undefined') {
+        startCleanupScheduler()
+    }
 
-  return (
-      <html lang="en" className="bg-background text-foreground">
-        <body className="antialiased">
-          <NextIntlClientProvider messages={messages}>
-              <AuthProvider>
-                  {children}
-              </AuthProvider>
-          </NextIntlClientProvider>
-        </body>
-      </html>
-  )
+    return (
+        <html lang="en" className="bg-background text-foreground">
+            <body className="antialiased">
+                <NextIntlClientProvider messages={messages}>
+                    {children}
+                </NextIntlClientProvider>
+            </body>
+        </html>
+    )
 }

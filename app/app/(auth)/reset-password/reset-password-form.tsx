@@ -11,7 +11,7 @@ import Link from "next/link"
 // Next-intl Libraries
 import { useTranslations } from 'next-intl'
 // Project Libraries
-import { resetPassword, verifyResetToken } from "@/actions/auth"
+import { resetPassword, verifyResetToken } from "@/src/controller/auth-controller"
 
 /////////////////////////////
 ///   COMPONENT SECTION   ///
@@ -95,7 +95,7 @@ export default function ResetPasswordForm({ token }: { token?: string }) {
                         href="/forgot-password"
                         className="text-primary hover:text-primary-hover text-sm font-medium"
                     >
-                        {t('requestNewLink')}
+                        {t('requestNew')}
                     </Link>
                 </div>
             </div>

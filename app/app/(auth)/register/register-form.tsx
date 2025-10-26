@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation"
 // Next-intl Libraries
 import { useTranslations } from 'next-intl'
 // Project Libraries
-import { signUp } from "@/actions/auth"
+import { signUp } from "@/src/controller/auth-controller"
 
 /////////////////////////////
 ///   COMPONENT SECTION   ///
@@ -42,7 +42,7 @@ export default function RegisterForm() {
             setLoading(false)
         } else {
             // Redirect to dashboard on success
-            router.push("/dashboard")
+            router.push("/verify-email-pending")
             router.refresh()
         }
     }

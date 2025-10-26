@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation"
 // Next-intl Libraries
 import { useTranslations } from 'next-intl'
 // Project Libraries
-import { verifyEmail } from "@/actions/auth"
+import { verifyEmail } from "@/src/controller/auth-controller"
 
 /////////////////////////////
 ///   COMPONENT SECTION   ///

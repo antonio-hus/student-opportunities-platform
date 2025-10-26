@@ -11,7 +11,7 @@ import Link from "next/link"
 // Next-intl Libraries
 import { useTranslations } from 'next-intl'
 // Project Libraries
-import { signIn } from "@/actions/auth"
+import { signIn } from "@/src/controller/auth-controller"
 
 /////////////////////////////
 ///   COMPONENT SECTION   ///
