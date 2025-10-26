@@ -176,6 +176,48 @@ export default {
                 privacy: "Politica de Confidențialitate",
                 terms: "Termeni și Condiții",
                 contact: "Contact"
+            },
+            legal: {
+                privacy: {
+                    title: "Politica de Confidențialitate",
+                    lastUpdated: "Ultima actualizare: 26 octombrie 2025",
+                    body: `## Colectarea Informațiilor
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+
+## Utilizarea Datelor
+
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+## Drepturile Tale
+
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`
+                },
+                terms: {
+                    title: "Termeni și Condiții",
+                    lastUpdated: "Ultima actualizare: 26 octombrie 2025",
+                    body: `## Acceptare
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.
+
+## Obligații Utilizator
+
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.
+
+## Încetare
+
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat.`
+                },
+                contact: {
+                    title: "Contactează-ne",
+                    description: "Ia legătura cu noi prin oricare dintre canalele de mai jos.",
+                    emailLabel: "Email",
+                    email: "contact@platforma-universitara.ro",
+                    phoneLabel: "Telefon",
+                    phone: "+40 123 456 789",
+                    addressLabel: "Adresă",
+                    address: "Cluj-Napoca, România"
+                }
             }
         }
     },

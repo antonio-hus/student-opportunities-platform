@@ -177,6 +177,48 @@ export default {
                 terms: "Terms of Service",
                 contact: "Contact"
             }
+        },
+        legal: {
+            privacy: {
+                title: "Privacy Policy",
+                lastUpdated: "Last updated: October 26, 2025",
+                body: `## Information Collection
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+
+## Data Usage
+
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+## Your Rights
+
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.`
+            },
+            terms: {
+                title: "Terms of Service",
+                lastUpdated: "Last updated: October 26, 2025",
+                body: `## Acceptance
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.
+
+## User Obligations
+
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.
+
+## Termination
+
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat.`
+            },
+            contact: {
+                title: "Contact Us",
+                description: "Get in touch with us through any of the channels below.",
+                emailLabel: "Email",
+                email: "contact@university-platform.ro",
+                phoneLabel: "Phone",
+                phone: "+40 123 456 789",
+                addressLabel: "Address",
+                address: "Cluj-Napoca, Romania"
+            }
         }
     },
     email: {
@@ -247,5 +289,5 @@ export default {
             resetEmailSent: "If an account exists with this email, a reset link has been sent",
             verificationEmailSent: "If an account exists with this email, a verification link has been sent"
         }
-    }
+    },
 } as const;

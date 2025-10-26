@@ -28,19 +28,19 @@ export default function Footer() {
                     {/* Legal Links */}
                     <div className="flex flex-wrap justify-center gap-6">
                         <Link
-                            href="/privacy"
+                            href="/legal/privacy"
                             className="text-sm text-text-secondary transition-colors hover:text-text-primary"
                         >
                             {t('privacy')}
                         </Link>
                         <Link
-                            href="/terms"
+                            href="/legal/terms"
                             className="text-sm text-text-secondary transition-colors hover:text-text-primary"
                         >
                             {t('terms')}
                         </Link>
                         <Link
-                            href="/contact"
+                            href="/legal/contact"
                             className="text-sm text-text-secondary transition-colors hover:text-text-primary"
                         >
                             {t('contact')}
