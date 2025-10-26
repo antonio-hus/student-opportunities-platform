@@ -105,7 +105,11 @@ export default {
                 resendIn: "Resend in",
                 seconds: "seconds",
                 waitMessage: "Please wait before requesting another email",
-                emailSent: "Verification email sent! Please check your inbox."
+                emailSent: "Verification email sent! Please check your inbox.",
+                or: "or",
+                signOut: "Sign Out",
+                signingOut: "Signing out...",
+                signOutHelp: "Sign out if you need to use a different account"
             },
             resendVerification: {
                 title: "Resend Verification Email",
@@ -121,6 +125,59 @@ export default {
                 backToLogin: "Back to Login"
             }
         },
+        navigation: {
+            student: {
+                overview: "Overview",
+                discover: "Discover",
+                applications: "Applications",
+                myProjects: "My Projects",
+                portfolio: "Portfolio",
+                profile: "Profile",
+                settings: "Settings",
+                student: "Student",
+                signOut: "Sign Out"
+            },
+            coordinator: {
+                overview: "Overview",
+                projectReviews: "Project Reviews",
+                studentApplications: "Student Applications",
+                supervisedProjects: "Supervised Projects",
+                evaluations: "Evaluations",
+                profile: "Profile",
+                settings: "Settings",
+                coordinator: "Coordinator",
+                signOut: "Sign Out"
+            },
+            organization: {
+                overview: "Overview",
+                projects: "Projects",
+                applications: "Applications",
+                analytics: "Analytics",
+                profile: "Profile",
+                settings: "Settings",
+                organization: "Organization",
+                signOut: "Sign Out"
+            },
+            admin: {
+                overview: "Overview",
+                userManagement: "User Management",
+                organizations: "Organizations",
+                projectModeration: "Project Moderation",
+                analytics: "Analytics",
+                platformConfig: "Platform Config",
+                security: "Security",
+                settings: "Settings",
+                administrator: "Administrator",
+                signOut: "Sign Out"
+            },
+            footer: {
+                platformName: "University Platform",
+                allRightsReserved: "All rights reserved",
+                privacy: "Privacy Policy",
+                terms: "Terms of Service",
+                contact: "Contact"
+            }
+        }
     },
     email: {
         verification: {

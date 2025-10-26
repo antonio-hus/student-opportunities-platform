@@ -105,7 +105,11 @@ export default {
                 resendIn: "Retrimite în",
                 seconds: "secunde",
                 waitMessage: "Te rugăm să aștepți înainte de a solicita un alt email",
-                emailSent: "Email de verificare trimis! Te rugăm să verifici inbox-ul."
+                emailSent: "Email de verificare trimis! Te rugăm să verifici inbox-ul.",
+                or: "sau",
+                signOut: "Deconectează-te",
+                signingOut: "Se deconectează...",
+                signOutHelp: "Deconectează-te dacă trebuie să folosești un alt cont"
             },
             resendVerification: {
                 title: "Retrimite Email de Verificare",
@@ -121,6 +125,59 @@ export default {
                 backToLogin: "Înapoi la Autentificare"
             }
         },
+        navigation: {
+            student: {
+                overview: "Prezentare Generală",
+                discover: "Descoperă",
+                applications: "Aplicații",
+                myProjects: "Proiectele Mele",
+                portfolio: "Portofoliu",
+                profile: "Profil",
+                settings: "Setări",
+                student: "Student",
+                signOut: "Deconectare"
+            },
+            coordinator: {
+                overview: "Prezentare Generală",
+                projectReviews: "Evaluări Proiecte",
+                studentApplications: "Aplicații Studenți",
+                supervisedProjects: "Proiecte Coordonate",
+                evaluations: "Evaluări",
+                profile: "Profil",
+                settings: "Setări",
+                coordinator: "Coordonator",
+                signOut: "Deconectare"
+            },
+            organization: {
+                overview: "Prezentare Generală",
+                projects: "Proiecte",
+                applications: "Aplicații",
+                analytics: "Analiză",
+                profile: "Profil",
+                settings: "Setări",
+                organization: "Organizație",
+                signOut: "Deconectare"
+            },
+            admin: {
+                overview: "Prezentare Generală",
+                userManagement: "Gestionare Utilizatori",
+                organizations: "Organizații",
+                projectModeration: "Moderare Proiecte",
+                analytics: "Analiză",
+                platformConfig: "Configurare Platformă",
+                security: "Securitate",
+                settings: "Setări",
+                administrator: "Administrator",
+                signOut: "Deconectare"
+            },
+            footer: {
+                platformName: "Platforma Universitară",
+                allRightsReserved: "Toate drepturile rezervate",
+                privacy: "Politica de Confidențialitate",
+                terms: "Termeni și Condiții",
+                contact: "Contact"
+            }
+        }
     },
     email: {
         verification: {

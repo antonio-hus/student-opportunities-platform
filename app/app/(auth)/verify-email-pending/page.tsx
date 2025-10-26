@@ -60,7 +60,7 @@ export default async function VerifyEmailPendingPage() {
                     <p className="text-sm text-text-secondary mb-4">
                         {t('didNotReceive')}
                     </p>
-                    <VerifyEmailPendingForm userEmail={user.email} />
+                    <VerifyEmailPendingForm />
                 </div>
             </div>
         </div>
