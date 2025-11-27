@@ -4,8 +4,8 @@
 // Third-party Libraries
 import cron from 'node-cron';
 // Project Libraries
-import { VerificationTokenService } from '@/src/service/verification-token-service';
-import { PasswordResetTokenService } from '@/src/service/password-reset-token-service';
+import { VerificationTokenService } from '@/src/service/auth/verification-token-service';
+import { PasswordResetTokenService } from '@/src/service/auth/password-reset-token-service';
 
 /////////////////////////////
 ///    SERVICE SECTION    ///

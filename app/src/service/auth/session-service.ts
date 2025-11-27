@@ -3,7 +3,7 @@
 /////////////////////////////
 // Project Libraries
 import { SessionRepository } from '@/src/repository/session-repository';
-import { UserService } from '@/src/service/user-service';
+import { UserService } from '@/src/service/user/user-service';
 import { User } from '@/src/domain/user';
 
 /////////////////////////////

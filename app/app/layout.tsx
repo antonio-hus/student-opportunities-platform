@@ -10,7 +10,7 @@ import { getMessages, getTranslations } from 'next-intl/server'
 // Styles
 import "./globals.css"
 // Project Libraries
-import { startCleanupScheduler } from '@/src/service/cleanup-service'
+import { startCleanupScheduler } from '@/src/service/auth/cleanup-service'
 
 /////////////////////////////
 ///   METADATA  SECTION   ///

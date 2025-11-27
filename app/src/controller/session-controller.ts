@@ -6,8 +6,8 @@
 // React Libraries
 import { cache } from 'react';
 // Project Libraries
-import { SessionService } from '@/src/service/session-service';
-import { UserService } from '@/src/service/user-service';
+import { SessionService } from '@/src/service/auth/session-service';
+import { UserService } from '@/src/service/user/user-service';
 
 /////////////////////////////
 ///  CONTROLLER FUNCTIONS ///

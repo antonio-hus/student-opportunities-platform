@@ -6,10 +6,10 @@
 // Next Libraries
 import { redirect } from "next/navigation";
 // Project Libraries
-import { AuthService } from "@/src/service/auth-service";
-import { EmailService } from "@/src/service/email-service";
-import { RateLimitService } from "@/src/service/rate-limit-service";
-import { SessionService } from "@/src/service/session-service";
+import { AuthService } from "@/src/service/auth/auth-service";
+import { EmailService } from "@/src/service/email/email-service";
+import { RateLimitService } from "@/src/service/rate-limit/rate-limit-service";
+import { SessionService } from "@/src/service/auth/session-service";
 import { AuthValidator } from "@/src/validation/auth-validation";
 import { getTranslations } from "@/src/utils/i18n/server";
 import { getClientIp } from "@/src/utils/ip";

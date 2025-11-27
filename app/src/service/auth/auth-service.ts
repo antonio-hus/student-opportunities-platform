@@ -3,11 +3,11 @@
 /////////////////////////////
 // Project Libraries
 import { UserRole } from '@/src/domain/user';
-import { VerificationTokenService } from '@/src/service/verification-token-service';
-import { PasswordResetTokenService } from '@/src/service/password-reset-token-service';
+import { VerificationTokenService } from '@/src/service/auth/verification-token-service';
+import { PasswordResetTokenService } from '@/src/service/auth/password-reset-token-service';
 import { AuthValidator } from '@/src/validation/auth-validation';
 import { hashPassword, verifyPassword } from '@/src/utils/password-hash';
-import { UserService } from "@/src/service/user-service";
+import { UserService } from "@/src/service/user/user-service";
 
 /////////////////////////////
 ///    SERVICE SECTION    ///
