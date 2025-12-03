@@ -13,6 +13,7 @@ import { SessionService } from "@/src/service/auth/session-service";
 import { AuthValidator } from "@/src/validation/auth-validation";
 import { getTranslations } from "@/src/utils/i18n/server";
 import { getClientIp } from "@/src/utils/ip";
+import {UserService} from "@/src/service/user/user-service";
 
 
 /////////////////////////////
@@ -34,6 +35,7 @@ import { getClientIp } from "@/src/utils/ip";
 export async function signUp(formData: FormData) {
     const { t, locale } = await getTranslations();
     const authService = new AuthService();
+    const userService = new UserService();
     const emailService = new EmailService();
     const sessionService = new SessionService();
 
@@ -65,16 +67,28 @@ export async function signUp(formData: FormData) {
             return { success: false, error: firstError };
         }
 
-        // Delegate business logic to service
+        // Delegate business logic to service (Create User)
         const { user, verificationToken } = await authService.signUp(data);
 
-        // Send verification email
-        await emailService.sendVerification(
-            user.email,
-            user.name || 'User',
-            verificationToken,
-            locale
-        );
+        // Send verification email with rollback
+        try {
+            await emailService.sendVerification(
+                user.email,
+                user.name || 'User',
+                verificationToken,
+                locale
+            );
+        } catch (emailError) {
+            console.error("[AuthController] Failed to send verification email, rolling back user creation:", emailError);
+
+            // ROLLBACK: Delete the user we just created so they can try again
+            await userService.deleteById(user.id);
+
+            return {
+                success: false,
+                error: t('errors.email.verificationFailed')
+            };
+        }
 
         // Create session
         await sessionService.createSession(user);
