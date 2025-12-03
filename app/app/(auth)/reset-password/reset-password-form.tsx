@@ -11,7 +11,7 @@ import Link from "next/link"
 // Next-intl Libraries
 import { useTranslations } from 'next-intl'
 // Project Libraries
-import { resetPassword, verifyResetToken } from "@/src/controller/auth-controller"
+import { resetPassword, verifyResetToken } from "@/src/controller/auth/auth-controller"
 
 /////////////////////////////
 ///   COMPONENT SECTION   ///

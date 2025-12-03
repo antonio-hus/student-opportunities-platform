@@ -10,7 +10,7 @@ import Link from "next/link"
 // Next-intl Libraries
 import { useTranslations } from 'next-intl'
 // Project Libraries
-import { requestPasswordReset } from "@/src/controller/auth-controller"
+import { requestPasswordReset } from "@/src/controller/auth/auth-controller"
 
 /////////////////////////////
 ///   COMPONENT SECTION   ///

@@ -6,7 +6,7 @@ import React from "react"
 // Next Libraries
 import { redirect } from 'next/navigation'
 // Project Libraries
-import { verifySession } from '@/src/controller/session-controller'
+import { verifySession } from '@/src/controller/auth/session-controller'
 import StudentHeader from '@/components/navigation/StudentHeader'
 import OrganizationHeader from '@/components/navigation/OrganizationHeader'
 import CoordinatorHeader from '@/components/navigation/CoordinatorHeader'

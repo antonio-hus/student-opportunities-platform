@@ -12,7 +12,7 @@ import Link from 'next/link'
 // Third-party Libraries
 import { Menu, X, LogOut, LucideIcon } from 'lucide-react'
 // Project Libraries
-import { signOut } from '@/src/controller/auth-controller'
+import { signOut } from '@/src/controller/auth/auth-controller'
 
 
 /////////////////////////////

@@ -10,7 +10,7 @@ import Link from "next/link"
 // Next-intl Libraries
 import { useTranslations } from 'next-intl'
 // Project Libraries
-import { resendVerificationEmail } from '@/src/controller/auth-controller'
+import { resendVerificationEmail } from '@/src/controller/auth/auth-controller'
 
 /////////////////////////////
 ///   COMPONENT SECTION   ///

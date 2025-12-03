@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation"
 // Next-intl Libraries
 import { useTranslations } from 'next-intl'
 // Project Libraries
-import { signUp } from "@/src/controller/auth-controller"
+import { signUp } from "@/src/controller/auth/auth-controller"
 
 /////////////////////////////
 ///   COMPONENT SECTION   ///

@@ -5,7 +5,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 // Project Libraries
-import { checkSessionForProxy } from '@/src/controller/session-controller';
+import { checkSessionForProxy } from '@/src/controller/auth/session-controller';
 import { UserRole } from '@/src/domain/user';
 
 /////////////////////////////

@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation';
 // Next-intl Libraries
 import { getTranslations } from 'next-intl/server';
 // Project Libraries
-import { verifySession } from '@/src/controller/session-controller';
+import { verifySession } from '@/src/controller/auth/session-controller';
 import VerifyEmailPendingForm from './verify-email-pending-form';
 
 /////////////////////////////
