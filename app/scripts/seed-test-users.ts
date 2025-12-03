@@ -7,7 +7,7 @@ import { hashPassword } from '@/src/utils/password-hash'
 import { UserRole } from '@prisma/client'
 
 /////////////////////////////
-///    SEED FUNCTION      ///
+///     SEED FUNCTION     ///
 /////////////////////////////
 async function seedTestUsers() {
     console.log('🌱 Starting test user seeding...\n')

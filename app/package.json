@@ -18,6 +18,7 @@
     "db:push": "prisma db push",
     "db:reset": "prisma migrate reset",
     "db:setup": "prisma generate && prisma migrate deploy",
+    "admin:add": "tsx scripts/create-admin.ts",
     "theme:generate": "tsx scripts/generate-css-vars.ts",
     "postinstall": "prisma generate",
     "clean": "rm -rf .next node_modules",
