@@ -3,7 +3,7 @@
 /////////////////////////////
 // Project Libraries
 import prisma from "@/src/database";
-import { Administrator } from "@/src/domain/administrator";
+import { Administrator } from "@/src/domain/admin";
 
 
 /////////////////////////////
@@ -13,7 +13,7 @@ import { Administrator } from "@/src/domain/administrator";
  * Repository for managing administrator profiles and related data
  * Handles all database operations specific to administrator accounts
  */
-export class AdministratorRepository {
+export class AdminRepository {
     /**
      * Creates a new administrator profile linked to an existing user
      *
